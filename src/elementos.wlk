@@ -9,8 +9,8 @@ class Elemento {
 
 class Hogar inherits Elemento {
 
-	var property nivelConfort
-	var property nivelMugre
+	var property nivelConfort = 0
+	var property nivelMugre = 0
 
 	override method esBuenoParaVidaHumana() = nivelMugre <= nivelConfort / 2
 
@@ -39,7 +39,7 @@ class Huerta inherits Elemento {
 
 class Mascota inherits Elemento {
 
-	var property nivelSalud
+	var property nivelSalud = 0
 
 	override method esBuenoParaVidaHumana() = nivelSalud > 250
 

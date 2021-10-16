@@ -2,7 +2,7 @@ class Plaga {
 
 	var property poblacion = 0
 
-	method nivelDeDanio() = 0
+	method nivelDanio() = 0
 
 	method transmiteEnfermedad() = self.poblacion() >= 10
 
@@ -17,11 +17,11 @@ class Plaga {
 
 }
 
-class Cucaracha inherits Plaga {
+class PlagaCucaracha inherits Plaga {
 
 	var property pesoPromedioPorBicho
 
-	override method nivelDeDanio() = self.poblacion() / 2
+	override method nivelDanio() = self.poblacion() / 2
 
 	override method transmiteEnfermedad() = super() && self.pesoPromedioPorBicho() >= 10
 
@@ -36,13 +36,13 @@ class Cucaracha inherits Plaga {
 
 }
 
-class Pulga inherits Plaga {
+class PlagaPulga inherits Plaga {
 
-	override method nivelDeDanio() = self.poblacion() * 2
+	override method nivelDanio() = self.poblacion() * 2
 
 }
 
-class Garrapata inherits Pulga {
+class PlagaGarrapata inherits PlagaPulga {
 
 	override method atacar(elemento) {
 		// ???? CONSULTA: ¿Qué convendría en este caso? Sobreescribir el método por completo para indicar el aumento del 20%? (es decir, el código original copipegarlo reemplazando  * 0.1 por * 0.2). O conviene hacer esto?:
@@ -56,9 +56,9 @@ class Garrapata inherits Pulga {
 
 }
 
-class Mosquito inherits Plaga {
+class PlagaMosquito inherits Plaga {
 
-	override method nivelDeDanio() = self.poblacion()
+	override method nivelDanio() = self.poblacion()
 
 	override method transmiteEnfermedad() = super() && self.poblacion() % 3 == 0
 

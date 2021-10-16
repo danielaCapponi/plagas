@@ -1,0 +1,142 @@
+// Para reutilizar las instancias con sus valores iniciales
+import configuracionInicialParaTodosLosTests.*
+
+describe "Tests sobre los elementos" {
+
+	method todosBuenos() {
+		hogar.nivelConfort(2000)
+		hogar.nivelMugre(0)
+		huerta.capacidadProduccion(2000)
+		mascota.nivelSalud(2000)
+	}
+
+	method todosMalos() {
+		hogar.nivelConfort(0)
+		hogar.nivelMugre(2000)
+		huerta.capacidadProduccion(0)
+		huerta.nivel(2000)
+		mascota.nivelSalud(0)
+	}
+
+	method asignarAPlagasPoblacionDe(cantidadPoblacion) {
+		plagaMosquitos.poblacion(cantidadPoblacion)
+		plagaGarrapatas.poblacion(cantidadPoblacion)
+		plagaPulgas.poblacion(cantidadPoblacion)
+		plagaCucaracha.poblacion(cantidadPoblacion)
+	}
+
+	method todasLasPlagasTransmitenEnfermedad() {
+		self.asignarAPlagasPoblacionDe(30)
+		plagaCucaracha.pesoPromedioPorBicho(10)
+	}
+
+	test "Elementos malos" {
+		self.todosMalos()
+		assert.notThat(hogar.esBuenoParaVidaHumana())
+		assert.notThat(huerta.esBuenoParaVidaHumana())
+		assert.notThat(mascota.esBuenoParaVidaHumana())
+	}
+
+	test "Elementos buenos" {
+		self.todosBuenos()
+		assert.that(hogar.esBuenoParaVidaHumana())
+		assert.that(huerta.esBuenoParaVidaHumana())
+		assert.that(mascota.esBuenoParaVidaHumana())
+	}
+
+	test "El hogar es atacado por una plaga y aumenta el nivel de mugre según el nivel de daño de la plaga" {
+		const nivelMugreInicial = hogar.nivelMugre()
+		self.asignarAPlagasPoblacionDe(10)
+		// nivelDanio= mosquitos: 10
+		hogar.serAtacadoPor(plagaMosquitos)
+		assert.equals(hogar.nivelMugre(), nivelMugreInicial + 10)
+		// nivelDanio= garrapatas: 20
+		hogar.nivelMugre(nivelMugreInicial)
+		hogar.serAtacadoPor(plagaGarrapatas)
+		assert.equals(hogar.nivelMugre(), nivelMugreInicial + 20)
+		// nivelDanio= pulgas: 20
+		hogar.nivelMugre(nivelMugreInicial)
+		hogar.serAtacadoPor(plagaPulgas)
+		assert.equals(hogar.nivelMugre(), nivelMugreInicial + 20)
+		// nivelDanio= cucarachas: 5
+		hogar.nivelMugre(nivelMugreInicial)
+		hogar.serAtacadoPor(plagaCucaracha)
+		assert.equals(hogar.nivelMugre(), nivelMugreInicial + 5)
+	}
+
+	test "la huerta es atacada por una plaga que no transmite enfermedad y baja el nivel de producción un 10% del nivel de daño de la plaga" {
+		const capacidadProduccionInicial = huerta.capacidadProduccion()
+		self.asignarAPlagasPoblacionDe(4) // No transmiten enfermedad
+		// nivelDanio= mosquitos:4 (10% = 0.4)
+		huerta.serAtacadoPor(plagaMosquitos)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 0.4)
+		// nivelDanio= garrapatas: 8 (10% = 0.8)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaGarrapatas)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 0.8)
+		// nivelDanio= pulgas: 8 (10% = 0.8)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaPulgas)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 0.8)
+		// nivelDanio= cucarachas: 2 (10% = 0.2)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaCucaracha)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 0.2)
+	}
+
+	test "la huerta es atacada por una plaga que transmite enfermedad y baja el nivel de producción un 10% del nivel de daño de la plaga, más un 10 adicional" {
+		const capacidadProduccionInicial = huerta.capacidadProduccion()
+		self.todasLasPlagasTransmitenEnfermedad() // poblacion 30
+		// nivelDanio= mosquitos:30 (10% = 3)
+		huerta.serAtacadoPor(plagaMosquitos)
+		assert.equals(capacidadProduccionInicial - 13, huerta.capacidadProduccion())
+		// nivelDanio= garrapatas: 60 (10% = 6)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaGarrapatas)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 16)
+		// nivelDanio= pulgas: 60 (10% = 6)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaPulgas)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 16)
+		// nivelDanio= 15 (10% = 1.5)
+		huerta.capacidadProduccion(capacidadProduccionInicial)
+		huerta.serAtacadoPor(plagaCucaracha)
+		assert.equals(huerta.capacidadProduccion(), capacidadProduccionInicial - 11.5)
+	}
+
+	test "la mascota es atacada por una plaga que no transmite enfermedad y no pasa nada" {
+		const nivelSaludInicial = mascota.nivelSalud()
+		self.asignarAPlagasPoblacionDe(4) // No transmiten enfermedad
+		mascota.serAtacadoPor(plagaMosquitos)
+		mascota.serAtacadoPor(plagaGarrapatas)
+		mascota.serAtacadoPor(plagaPulgas)
+		mascota.serAtacadoPor(plagaCucaracha)
+		assert.equals(nivelSaludInicial, mascota.nivelSalud())
+	}
+
+	test "la mascota es atacada por una plaga que transmite enfermedad y disminuye su salud según el nivel de danio" {
+		const nivelSaludInicial = mascota.nivelSalud()
+		self.todasLasPlagasTransmitenEnfermedad() // poblacion 30
+		// plagaMosquitos
+		var expected = nivelSaludInicial - plagaMosquitos.nivelDanio()
+		mascota.serAtacadoPor(plagaMosquitos)
+		assert.equals(expected, mascota.nivelSalud())
+		// plagaGarrapatas
+		mascota.nivelSalud(nivelSaludInicial)
+		expected = nivelSaludInicial - plagaGarrapatas.nivelDanio()
+		mascota.serAtacadoPor(plagaGarrapatas)
+		assert.equals(expected, mascota.nivelSalud())
+		// plagaPulgas
+		mascota.nivelSalud(nivelSaludInicial)
+		expected = nivelSaludInicial - plagaPulgas.nivelDanio()
+		mascota.serAtacadoPor(plagaPulgas)
+		assert.equals(expected, mascota.nivelSalud())
+		// plagaCucaracha
+		mascota.nivelSalud(nivelSaludInicial)
+		expected = nivelSaludInicial - plagaCucaracha.nivelDanio()
+		mascota.serAtacadoPor(plagaCucaracha)
+		assert.equals(expected, mascota.nivelSalud())
+	}
+
+}
+
