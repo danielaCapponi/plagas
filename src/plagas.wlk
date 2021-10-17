@@ -40,19 +40,18 @@ class PlagaPulga inherits Plaga {
 
 	override method nivelDanio() = self.poblacion() * 2
 
+	override method atacar(elemento) {
+		elemento.serAtacadoPor(self)
+		self.aumentarPoblacionEn(self.poblacion() * (self.porcentajeDanio() / 100))
+	}
+
+	method porcentajeDanio() = 10
+
 }
 
 class PlagaGarrapata inherits PlagaPulga {
 
-	override method atacar(elemento) {
-		// ???? CONSULTA: ¿Qué convendría en este caso? Sobreescribir el método por completo para indicar el aumento del 20%? (es decir, el código original copipegarlo reemplazando  * 0.1 por * 0.2). O conviene hacer esto?:
-		// Guardo mi 10% inicial, porque luego daría distinta la cuenta
-		const diezPorCientoInicial = self.poblacion() * 0.1
-			// Corro el método original de la clase madre
-		super(elemento)
-			// Y luego le aumento el 10% restante, calculado antes de hacer el aumento previo
-		self.aumentarPoblacionEn(diezPorCientoInicial)
-	}
+	override method porcentajeDanio() = 20
 
 }
 
